@@ -35,6 +35,8 @@ func GetProvider(entity models.ProviderEntity, config models.ProviderConfig) (Pr
 	switch entity {
 	case ZipProvider:
 		prvd, err = newZipProvider(config)
+	case TarProvider:
+		prvd, err = newTarProvider(config)
 	default:
 		err = models.ErrProviderNotSupported
 	}

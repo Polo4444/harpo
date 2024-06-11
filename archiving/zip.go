@@ -52,12 +52,6 @@ func (z *zipProvider) Archive(ctx context.Context, src string, dst io.Writer, ig
 	return format.Archive(ctx, dst, files)
 }
 
-func NewExtract(dst string) *extract {
-	return &extract{
-		dst: dst,
-	}
-}
-
 // Extract extracts the zip archive from the src and writes it to the dst. The dst must be a directory.
 func (z *zipProvider) Extract(ctx context.Context, src io.Reader, dst string, ignoreErrors bool) error {
 

@@ -13,6 +13,12 @@ type extract struct {
 	dst string
 }
 
+func NewExtract(dst string) *extract {
+	return &extract{
+		dst: dst,
+	}
+}
+
 func (e *extract) handler(ctx context.Context, f archiver.File) error {
 
 	relativePath := filepath.Join(e.dst, f.NameInArchive)
