@@ -12,7 +12,7 @@ import (
 type CompressionType string
 
 const (
-	CompressionTypeGz CompressionType = "Gz"
+	GzCompressionType CompressionType = "Gz"
 )
 
 type tarProvider struct {
@@ -34,7 +34,7 @@ func newTarProvider(config models.ProviderConfig) (*tarProvider, error) {
 		method:      config["method"].(int),
 	}
 
-	if prvd.compression != string(CompressionTypeGz) {
+	if prvd.compression != string(GzCompressionType) {
 		return nil, fmt.Errorf("invalid compression type: %s", prvd.compression)
 	}
 
@@ -59,7 +59,7 @@ func (t *tarProvider) Archive(ctx context.Context, src string, dst io.Writer, ig
 	var compression archiver.Compression
 
 	switch t.compression {
-	case string(CompressionTypeGz):
+	case string(GzCompressionType):
 		compression = archiver.Gz{
 			CompressionLevel: t.method,
 			Multithreaded:    true,

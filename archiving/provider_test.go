@@ -12,7 +12,7 @@ var (
 	)
 	testTarConf = BuildTarConfig(
 		9,
-		CompressionTypeGz,
+		GzCompressionType,
 	)
 )
 
