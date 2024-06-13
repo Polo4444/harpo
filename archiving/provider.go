@@ -9,7 +9,7 @@ import (
 
 const (
 	ZipProvider models.ProviderEntity = "ZIP"
-	TarProvider models.ProviderEntity = "TAR.GZ"
+	TarProvider models.ProviderEntity = "TAR"
 )
 
 // Provider interface

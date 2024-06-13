@@ -9,20 +9,33 @@ import (
 	"github.com/mholt/archiver/v4"
 )
 
+type CompressionType string
+
+const (
+	CompressionTypeGz CompressionType = "Gz"
+)
+
 type tarProvider struct {
-	method int // Method/level of compression
+	compression string // Compression method: Gz
+	method      int    // Method/level of compression
 }
 
-func BuildTarConfig(method int) models.ProviderConfig {
+func BuildTarConfig(method int, compression CompressionType) models.ProviderConfig {
 	return models.ProviderConfig{
-		"method": method,
+		"compression": string(compression),
+		"method":      method,
 	}
 }
 
 func newTarProvider(config models.ProviderConfig) (*tarProvider, error) {
 
 	prvd := &tarProvider{
-		method: config["method"].(int),
+		compression: config["compression"].(string),
+		method:      config["method"].(int),
+	}
+
+	if prvd.compression != string(CompressionTypeGz) {
+		return nil, fmt.Errorf("invalid compression type: %s", prvd.compression)
 	}
 
 	// check if the method is valid
@@ -43,11 +56,23 @@ func (t *tarProvider) Archive(ctx context.Context, src string, dst io.Writer, ig
 		return err
 	}
 
-	format := archiver.CompressedArchive{
-		Compression: archiver.Gz{
+	var compression archiver.Compression
+
+	switch t.compression {
+	case string(CompressionTypeGz):
+		compression = archiver.Gz{
 			CompressionLevel: t.method,
 			Multithreaded:    true,
-		},
+		}
+	default:
+		compression = archiver.Gz{
+			CompressionLevel: t.method,
+			Multithreaded:    true,
+		}
+	}
+
+	format := archiver.CompressedArchive{
+		Compression: compression,
 		Archival: archiver.Tar{
 			ContinueOnError: ignoreErrors,
 		},
