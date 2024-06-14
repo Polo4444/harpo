@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/Polo44444/harpo/models"
+	storing_s3 "github.com/Polo44444/harpo/storing/s3"
 )
 
 const (
@@ -30,7 +31,7 @@ type Provider interface {
 	/*Info returns the information of the file in the filePath.
 	`filePath` is the path where the data is located.
 	*/
-	Info(ctx context.Context, filePath string) (*FileInfo, error)
+	Info(ctx context.Context, filePath string) (*models.FileInfo, error)
 
 	/*Delete deletes the data from the filePath.
 	`filePath` is the path where the data will be deleted.
@@ -43,6 +44,10 @@ type Provider interface {
 	// If one file fails to be deleted, the function will continue deleting the rest of the files.
 	// If all files fails to be deleted, the function will return an nil (no error).
 	DeleteMany(ctx context.Context, filePaths []string) error
+
+	/*Close closes the provider.
+	 */
+	Close(ctx context.Context) error
 }
 
 // GetProvider returns a provider based on the entity and the config
@@ -53,6 +58,7 @@ func GetProvider(entity models.ProviderEntity, config models.ProviderConfig) (Pr
 
 	switch entity {
 	case S3Provider:
+		prvd, err = storing_s3.NewS3Provider(config)
 	default:
 		err = models.ErrProviderNotSupported
 	}
