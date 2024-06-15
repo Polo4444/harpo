@@ -24,7 +24,7 @@ type resolverV2 struct {
 }
 
 func NewResolverV2(bucket, region, endpoint string, forcePath bool) *resolverV2 {
-	return &resolverV2{bucket: bucket, region: region, endpoint: endpoint}
+	return &resolverV2{bucket: bucket, region: region, endpoint: endpoint, forcePath: forcePath}
 }
 
 func (r *resolverV2) ResolveEndpoint(ctx context.Context, params s3.EndpointParameters) (transport.Endpoint, error) {

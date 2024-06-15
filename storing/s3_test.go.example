@@ -1,0 +1,134 @@
+package storing
+
+import (
+	"bytes"
+	"context"
+	"fmt"
+	"strings"
+	"testing"
+	"time"
+
+	storing_s3 "github.com/Polo44444/harpo/storing/s3"
+)
+
+var testS3Config = storing_s3.BuildS3Config(
+	"key",
+	"secret",
+	"bucket",
+	"region",
+	"endpoint",
+	true,
+)
+var testS3Data = "Just a simple S3 upload test"
+
+var testProvider Provider
+
+func TestInitS3(t *testing.T) {
+
+	var got error
+	testProvider, got = GetProvider(S3Provider, testS3Config)
+	if got != nil {
+		t.Fatalf("got: %v, wanted nil", got)
+	}
+}
+
+func TestUploadWithReader(t *testing.T) {
+
+	TestInitS3(t) // init provider
+
+	// timeout context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	got := testProvider.UploadWithReader(ctx, "test.txt", strings.NewReader(testS3Data), "text/plain")
+	if got != nil {
+		t.Fatalf("got: %v, wanted nil", got)
+	}
+}
+
+func TestDownloadWithWriter(t *testing.T) {
+
+	TestInitS3(t) // init provider
+
+	// timeout context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	buf := bytes.NewBuffer(nil)
+	got := testProvider.DownloadWithWriter(ctx, "test.txt", buf)
+	if got != nil {
+		t.Fatalf("got: %v, wanted nil", got)
+	}
+
+	if buf.String() != testS3Data {
+		t.Fatalf("got: %v, wanted Just a simple S3 upload test", buf.String())
+	}
+}
+
+func TestInfo(t *testing.T) {
+
+	TestInitS3(t) // init provider
+
+	// timeout context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	got, err := testProvider.Info(ctx, "test.txt")
+	if err != nil {
+		t.Fatalf("got: %v, wanted nil", err)
+	}
+
+	if got.Size != int64(len(testS3Data)) {
+		t.Fatalf("got: %v, wanted %v", got.Size, len(testS3Data))
+	}
+}
+
+func TestDelete(t *testing.T) {
+
+	TestInitS3(t) // init provider
+
+	// timeout context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	got := testProvider.Delete(ctx, "test.txt")
+	if got != nil {
+		t.Fatalf("got: %v, wanted nil", got)
+	}
+}
+
+func TestClose(t *testing.T) {
+
+	TestInitS3(t) // init provider
+
+	// timeout context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	got := testProvider.Close(ctx)
+	if got != nil {
+		t.Fatalf("got: %v, wanted nil", got)
+	}
+}
+
+func TestDeleteMany(t *testing.T) {
+
+	TestInitS3(t) // init provider
+
+	// timeout context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// upload 3 files
+	for i := 0; i < 3; i++ {
+		t.Run("upload-"+fmt.Sprint(i), func(t *testing.T) {
+			testProvider.UploadWithReader(ctx, "test"+fmt.Sprint(i)+".txt", strings.NewReader(testS3Data), "text/plain")
+		})
+	}
+
+	// delete 3 files
+	got := testProvider.DeleteMany(ctx, []string{"test0.txt", "test1.txt", "test2.txt"})
+	if got != nil {
+		t.Fatalf("got: %v, wanted nil", got)
+	}
+}
