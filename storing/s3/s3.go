@@ -35,24 +35,24 @@ type s3Provider struct {
 func BuildS3Config(accessKeyID, secretAccessKey, bucket, region, endpoint string, forcePath bool) models.ProviderConfig {
 
 	return models.ProviderConfig{
-		"accessKeyID":     accessKeyID,
-		"secretAccessKey": secretAccessKey,
-		"bucket":          bucket,
-		"region":          region,
-		"endpoint":        endpoint,
-		"forcePath":       forcePath,
+		"access_key_id":     accessKeyID,
+		"secret_access_key": secretAccessKey,
+		"bucket":            bucket,
+		"region":            region,
+		"endpoint":          endpoint,
+		"force_path":        forcePath,
 	}
 }
 
 func NewS3Provider(config models.ProviderConfig) (*s3Provider, error) {
 
 	prvd := &s3Provider{
-		accessKeyID:     config["accessKeyID"].(string),
-		secretAccessKey: config["secretAccessKey"].(string),
+		accessKeyID:     config["access_key_id"].(string),
+		secretAccessKey: config["secret_access_key"].(string),
 		bucket:          config["bucket"].(string),
 		region:          config["region"].(string),
 		endpoint:        config["endpoint"].(string),
-		forcePath:       config["forcePath"].(bool),
+		forcePath:       config["force_path"].(bool),
 	}
 
 	s3Cfg, err := s3config.LoadDefaultConfig(
