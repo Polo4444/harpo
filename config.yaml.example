@@ -1,0 +1,51 @@
+#--------------------------------------------------------------------------------------#
+#                                                                                      #
+#                               HARPO CONFIGURATION FILE                               #
+#                                                                                      #
+# All the fields comments preceded by (*) are mandatory. The others are optional.      #
+# We currently support the following archivers: ZIP | TAR                              #
+# We currently support the following storages: S3                                      #
+# We currently support the following notifiers: SENTRY | SLACK | DISCORD               #
+#                                                                                      #
+# The backup are scheduled with cron expressions.                                      #
+#--------------------------------------------------------------------------------------#
+
+# List of folders to backup.
+# You can add as many folders as you want.
+# Each folder will be archived and uploaded to the storages.
+folders:
+  - path: /home/user1 # (*) Path of folder to backup. Can be relative or absolute
+    destination: backup/user1 # (*) Destination path of the archive. Can be relative or absolute
+    schedule: "0 1 * * *"  # Cron expression format. You can use this https://crontab.guru/#0_1_*_*_*
+    archiver: ZIP # (*) Archiver to use. Can be ZIP or TAR
+    storages: [s3]  # (*) List of registered storages names to use
+    notifiers: [sentry, slack, discord] # (*) List of registered notifiers names to use
+
+# Storage configurations.
+# A list ok key-value pairs where the key is the storage name and the value the storage settings
+storages:
+  s3:
+    type: S3 # (*) Storage type. Can be S3
+    settings:
+      access_key_id: my-access  # (*) Access key ID
+      secret_access_key: my-secret  # (*) Secret access key
+      bucket: my-bucket # (*) Bucket name
+      region: us-east-1 # (*) Region
+      endpoint: https://s3.domain.com # (*) Endpoint URL
+      force_path: true # When true, force a path-style endpoint to be used where the bucket name is part of the path.
+  
+# Notifier configurations.
+# A list ok key-value pairs where the key is the notifier name and the value the notifier settings
+notifiers:
+  sentry:
+    type: SENTRY # (*) Notifier type. Can be SENTRY | SLACK | DISCORD
+    settings:
+      dsn: my-dsn # (*) Sentry DSN
+  slack:
+    type: SLACK # (*) Notifier type. Can be SENTRY | SLACK | DISCORD
+    settings:
+      webhook_url: my-webhook-url # (*) Slack webhook URL
+  discord:
+    type: DISCORD # (*) Notifier type. Can be SENTRY | SLACK | DISCORD
+    settings:
+      webhook_url: my-webhook-url # (*) Discord webhook URL
