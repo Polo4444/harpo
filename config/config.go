@@ -1,4 +1,4 @@
-package gp
+package config
 
 type Settings struct {
 }
