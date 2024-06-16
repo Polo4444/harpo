@@ -14,9 +14,6 @@ var testSentryConf = BuildSentryConfig(
 
 func TestSendWithSentry(t *testing.T) {
 
-	// Init
-	TestInit(t)
-
 	// timeout context
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

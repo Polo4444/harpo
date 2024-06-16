@@ -20,5 +20,5 @@ func httpRequestError(err error) error {
 		return fmt.Errorf("failed to send message. %w", err)
 	}
 
-	return nil
+	return err
 }

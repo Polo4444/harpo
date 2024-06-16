@@ -1,5 +1,3 @@
-/* //go:build integration_test */
-
 package alerting
 
 import (
@@ -8,20 +6,20 @@ import (
 	"time"
 )
 
-var testSlackConf = BuildSlackConfig(
-	"webhook_url",
-)
+var testDiscordConf = ProviderConfig{
+	"webhook_url": "webhook_url",
+}
 
-func TestSendWithSlack(t *testing.T) {
+func TestSendWithDiscord(t *testing.T) {
 
 	// timeout context
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// We create init slack provider
-	p, err := GetProvider(SlackProvider, testSlackConf)
+	// We create init discord provider
+	p, err := GetProvider(DiscordProvider, testDiscordConf)
 	if err != nil {
-		t.Fatalf("Error creating Slack provider: %s", err.Error())
+		t.Fatalf("Error creating discord provider: %s", err.Error())
 	}
 	defer p.Close(ctx)
 
