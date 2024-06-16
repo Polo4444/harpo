@@ -66,7 +66,7 @@ func (s *slackProvider) Send(ctx context.Context, m *Message) error {
 			{
 				Type: "section",
 				Fields: []BlockText{
-					{Type: "mrkdwn", Text: fmt.Sprintf("*User:*\n%s", m.Entity)},
+					{Type: "mrkdwn", Text: fmt.Sprintf("*Entity:*\n%s", m.Entity)},
 					{Type: "mrkdwn", Text: fmt.Sprintf("*Location:*\n%s", m.LocationToString())},
 					{Type: "mrkdwn", Text: fmt.Sprintf("*Level:*\n%s", string(m.Level))},
 					{Type: "mrkdwn", Text: fmt.Sprintf("*Details:*\n%s", details)},
@@ -90,24 +90,13 @@ func (s *slackProvider) Send(ctx context.Context, m *Message) error {
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-
-	// Errors
-	if err != nil && err == context.Canceled {
-		return fmt.Errorf("request canceled. %w", err)
-	}
-
-	if err != nil && err == context.DeadlineExceeded {
-		return fmt.Errorf("request deadline exceeded. %w", err)
-	}
-
 	if err != nil {
-		return fmt.Errorf("failed to send message. %w", err)
+		return httpRequestError(err)
 	}
-
 	defer resp.Body.Close()
 
 	if !(resp.StatusCode >= 200 && resp.StatusCode <= 299) {
-		return fmt.Errorf("failed to send message. status Code: %d", resp.StatusCode)
+		return fmt.Errorf("failed to send message. Status Code: %d", resp.StatusCode)
 	}
 
 	return nil

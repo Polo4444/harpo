@@ -9,8 +9,9 @@ type ProviderEntity string
 type ProviderConfig map[string]interface{}
 
 const (
-	SentryProvider ProviderEntity = "SENTRY"
-	SlackProvider  ProviderEntity = "SLACK"
+	SentryProvider  ProviderEntity = "SENTRY"
+	SlackProvider   ProviderEntity = "SLACK"
+	DiscordProvider ProviderEntity = "DISCORD"
 )
 
 // Errors
@@ -37,6 +38,8 @@ func GetProvider(entity ProviderEntity, config ProviderConfig) (Provider, error)
 		prvd, err = newSentryProvider(config)
 	case SlackProvider:
 		prvd, err = newSlackProvider(config)
+	case DiscordProvider:
+		prvd, err = newDiscordProvider(config)
 	default:
 		err = ErrProviderNotSupported
 	}

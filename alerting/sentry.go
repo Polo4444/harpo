@@ -80,7 +80,7 @@ func (s *sentryProvider) Send(_ context.Context, m *Message) error {
 	ev.Level = s.ToSentryLevel(m.Level)
 	ev.User = sentry.User{ID: m.Entity}
 	ev.Extra["entity"] = m.Entity
-	ev.Extra["location"] = m.LocationToString()
+	ev.Extra["extras"] = m.LocationToString()
 	ev.Extra["details"] = details
 	ev.Extra["level"] = m.Level
 

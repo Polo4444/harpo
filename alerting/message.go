@@ -16,19 +16,19 @@ const (
 )
 
 type Message struct {
-	Entity   string       `json:"entity"`
-	Level    MessageLevel `json:"level"`
-	Location []string     `json:"location"`
-	Subject  string       `json:"subject"`
-	Details  error        `json:"details"`
+	Entity  string       `json:"entity"`
+	Level   MessageLevel `json:"level"`
+	Extras  []string     `json:"location"`
+	Subject string       `json:"subject"`
+	Details error        `json:"details"`
 }
 
-func NewMessage(entity string, level MessageLevel, location []string, subject string, details error) *Message {
-	return &Message{Entity: entity, Level: level, Location: location, Subject: subject, Details: details}
+func NewMessage(entity string, level MessageLevel, extras []string, subject string, details error) *Message {
+	return &Message{Entity: entity, Level: level, Extras: extras, Subject: subject, Details: details}
 }
 
 func (m *Message) LocationToString() string {
-	return strings.Join(m.Location, " > ")
+	return strings.Join(m.Extras, ", ")
 }
 func (m *Message) Validate() error {
 
@@ -36,7 +36,7 @@ func (m *Message) Validate() error {
 		return ErrNoSubjectProvided
 	}
 
-	if len(m.Location) == 0 {
+	if len(m.Extras) == 0 {
 		return fmt.Errorf("no message location provided")
 	}
 
