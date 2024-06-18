@@ -1,6 +1,7 @@
 package storing_s3
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -146,6 +147,55 @@ func (s *s3Provider) DeleteMany(ctx context.Context, filePaths []string) error {
 	})
 
 	return err
+}
+
+// Test tests the connection to the provider.
+func (s *s3Provider) Test(ctx context.Context) error {
+
+	testFilePrefix := "harpo.test"
+	testFileContent := bytes.NewBufferString("Hi dear! It's Harpo!🤗")
+
+	// Upload
+	err := s.UploadWithReader(ctx, testFilePrefix, testFileContent, "text/plain")
+	if err != nil {
+		return fmt.Errorf("1. Failed to upload test file, %w", err)
+	}
+
+	// Download
+	buf := new(bytes.Buffer)
+	err = s.DownloadWithWriter(ctx, testFilePrefix, buf)
+	if err != nil {
+		return fmt.Errorf(`1. Upload successfull!
+		2. failed to download test file, %w`, err)
+	}
+
+	// Check content
+	if testFileContent.String() != buf.String() {
+		return fmt.Errorf(`1. Upload successfull!
+		2. Download successfull!
+		3. Test file content is not the same`)
+	}
+
+	// Info
+	_, err = s.Info(ctx, testFilePrefix)
+	if err != nil {
+		return fmt.Errorf(`1. Upload successfull!
+		2. Download successfull!
+		3. Test file content is the same!
+		4. Failed to get info of test file, %w`, err)
+	}
+
+	// Delete
+	err = s.Delete(ctx, testFilePrefix)
+	if err != nil {
+		return fmt.Errorf(`1. Upload successfull!
+		2. Download successfull!
+		3. Test file content is the same!
+		4. Info successfull!
+		5. Failed to delete test file, %w`, err)
+	}
+
+	return nil
 }
 
 // Close closes the provider.

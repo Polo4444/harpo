@@ -15,6 +15,10 @@ const (
 // Provider interface
 type Provider interface {
 
+	/*Test tests the connection to the provider.
+	 */
+	Test(ctx context.Context) error
+
 	/*UploadWithReader uploads the data to the filePath.
 	`filePath` is the path where the data will be uploaded.
 	`data` is the data to be uploaded.
