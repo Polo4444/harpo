@@ -1,26 +1,62 @@
 package config
 
-type Folder struct {
-	Path        string   `json:"path" yaml:"path"`
-	Destination string   `json:"destination" yaml:"destination"`
-	Schedule    string   `json:"schedule" yaml:"schedule"`
-	Archiver    string   `json:"archiver" yaml:"archiver"`
-	Storages    []string `json:"storages" yaml:"storages"`
-	Notifiers   []string `json:"notifiers" yaml:"notifiers"`
-}
+import (
+	"os"
 
-type Storage struct {
-	Type     string         `json:"type" yaml:"type"`
-	Settings map[string]any `json:"settings" yaml:"settings"`
-}
+	"github.com/Polo44444/harpo/models"
+	"gopkg.in/yaml.v3"
+)
 
 type Notifier struct {
-	Type     string         `json:"type" yaml:"type"`
-	Settings map[string]any `json:"settings" yaml:"settings"`
+	Type     string                `json:"type" yaml:"type"`
+	Settings models.ProviderConfig `json:"settings" yaml:"settings"`
 }
 
 type Settings struct {
-	Folders   []Folder   `json:"folders" yaml:"folders"`
-	Storages  []Storage  `json:"storages" yaml:"storages"`
-	Notifiers []Notifier `json:"notifiers" yaml:"notifiers"`
+	Folders   []Folder            `json:"folders" yaml:"folders"`
+	Storages  map[string]Storage  `json:"storages" yaml:"storages"`
+	Notifiers map[string]Notifier `json:"notifiers" yaml:"notifiers"`
+}
+
+func Load(path string) (*Settings, error) {
+
+	// Open file
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	// Load config from file
+	settings := &Settings{}
+	err = yaml.NewDecoder(file).Decode(&settings)
+	if err != nil {
+		return nil, err
+	}
+
+	return settings, nil
+}
+
+// Validate checks if the settings are valid
+func (s *Settings) Validate() error {
+
+	// Validate folders
+	for _, folder := range s.Folders {
+
+		err := folder.Validate(s.Storages, s.Notifiers)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Validate registered storages
+	for name, storage := range s.Storages {
+
+		err := storage.Validate(name)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
