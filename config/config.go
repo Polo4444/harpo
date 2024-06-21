@@ -3,7 +3,9 @@ package config
 import (
 	"os"
 
+	"github.com/Polo44444/harpo/alerting"
 	"github.com/Polo44444/harpo/models"
+	"github.com/Polo44444/harpo/storing"
 	"gopkg.in/yaml.v3"
 )
 
@@ -69,4 +71,60 @@ func (s *Settings) Validate() error {
 	}
 
 	return nil
+}
+
+// GetStorageProviders returns the storage providers
+func (s *Settings) GetStorageProviders() map[string]storing.Provider {
+
+	providers := map[string]storing.Provider{}
+
+	for name, storage := range s.Storages {
+
+		var (
+			p   storing.Provider
+			err error
+		)
+		switch storage.Type {
+		case string(storing.S3Provider):
+
+			p, err = storing.GetProvider(storing.S3Provider, storage.Settings)
+			if err != nil {
+				continue
+			}
+		default:
+			continue
+		}
+
+		providers[name] = p
+	}
+
+	return providers
+}
+
+// GetNotifierProviders returns the notifier providers
+func (s *Settings) GetNotifierProviders() map[string]alerting.Provider {
+
+	providers := map[string]alerting.Provider{}
+
+	for name, notifier := range s.Notifiers {
+
+		var (
+			p   alerting.Provider
+			err error
+		)
+		switch notifier.Type {
+		case string(alerting.DiscordProvider):
+
+			p, err = alerting.GetProvider(alerting.DiscordProvider, notifier.Settings)
+			if err != nil {
+				continue
+			}
+		default:
+			continue
+		}
+
+		providers[name] = p
+	}
+
+	return providers
 }

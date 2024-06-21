@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/Polo44444/harpo/models"
 )
 
 type discordProvider struct {
@@ -30,11 +32,11 @@ type discordMessage struct {
 	Embeds  []discordEmbed `json:"embeds"`
 }
 
-func BuildDiscordConfig(webhookURL string) ProviderConfig {
-	return ProviderConfig{"webhook_url": webhookURL}
+func BuildDiscordConfig(webhookURL string) models.ProviderConfig {
+	return models.ProviderConfig{"webhook_url": webhookURL}
 }
 
-func newDiscordProvider(config ProviderConfig) (*discordProvider, error) {
+func newDiscordProvider(config models.ProviderConfig) (*discordProvider, error) {
 
 	prvd := &discordProvider{
 		webhookURL: config["webhook_url"].(string),

@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/Polo44444/harpo/models"
 )
 
 type slackProvider struct {
@@ -27,11 +29,11 @@ type BlockText struct {
 	Text string `json:"text"`
 }
 
-func BuildSlackConfig(webhookURL string) ProviderConfig {
-	return ProviderConfig{"webhook_url": webhookURL}
+func BuildSlackConfig(webhookURL string) models.ProviderConfig {
+	return models.ProviderConfig{"webhook_url": webhookURL}
 }
 
-func newSlackProvider(config ProviderConfig) (*slackProvider, error) {
+func newSlackProvider(config models.ProviderConfig) (*slackProvider, error) {
 
 	prvd := &slackProvider{
 		webhookURL: config["webhook_url"].(string),

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Polo44444/harpo/models"
 	"github.com/getsentry/sentry-go"
 )
 
@@ -12,13 +13,13 @@ type sentryProvider struct {
 	dsn string
 }
 
-func BuildSentryConfig(dsn string) ProviderConfig {
-	return ProviderConfig{
+func BuildSentryConfig(dsn string) models.ProviderConfig {
+	return models.ProviderConfig{
 		"dsn": dsn,
 	}
 }
 
-func newSentryProvider(config ProviderConfig) (*sentryProvider, error) {
+func newSentryProvider(config models.ProviderConfig) (*sentryProvider, error) {
 
 	prvd := &sentryProvider{
 		dsn: config["dsn"].(string),

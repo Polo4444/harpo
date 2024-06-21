@@ -4,9 +4,11 @@ import (
 	"context"
 	"testing"
 	"time"
+
+	"github.com/Polo44444/harpo/models"
 )
 
-var testDiscordConf = ProviderConfig{
+var testDiscordConf = models.ProviderConfig{
 	"webhook_url": "webhook_url",
 }
 

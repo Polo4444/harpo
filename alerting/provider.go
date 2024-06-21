@@ -3,15 +3,14 @@ package alerting
 import (
 	"context"
 	"fmt"
+
+	"github.com/Polo44444/harpo/models"
 )
 
-type ProviderEntity string
-type ProviderConfig map[string]interface{}
-
 const (
-	SentryProvider  ProviderEntity = "SENTRY"
-	SlackProvider   ProviderEntity = "SLACK"
-	DiscordProvider ProviderEntity = "DISCORD"
+	SentryProvider  models.ProviderEntity = "SENTRY"
+	SlackProvider   models.ProviderEntity = "SLACK"
+	DiscordProvider models.ProviderEntity = "DISCORD"
 )
 
 // Errors
@@ -28,7 +27,7 @@ type Provider interface {
 }
 
 // GetProvider returns a provider based on the entity and the config
-func GetProvider(entity ProviderEntity, config ProviderConfig) (Provider, error) {
+func GetProvider(entity models.ProviderEntity, config models.ProviderConfig) (Provider, error) {
 
 	var err error = nil
 	var prvd Provider = nil
