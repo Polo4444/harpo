@@ -16,7 +16,7 @@ type Storage struct {
 }
 
 // Validate checks if the storage is valid
-func (s *Storage) Validate(name string) error {
+func (s *Storage) Validate(name string, folder string) error {
 
 	typeUpper := strings.ToUpper(s.Type)
 
@@ -39,7 +39,7 @@ func (s *Storage) Validate(name string) error {
 	// Test provider
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second) // The test should not take more than 30 seconds
 	defer cancel()
-	err = p.Test(ctx)
+	err = p.Test(ctx, folder)
 	if err != nil {
 		return fmt.Errorf("Storage %s test failed:\n\n%v", name, err)
 	}

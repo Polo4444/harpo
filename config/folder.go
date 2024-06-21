@@ -31,17 +31,17 @@ func (f *Folder) Validate(storages map[string]Storage, notifiers map[string]Noti
 	}
 
 	// Check destination
-	if strings.TrimSpace(f.Destination) != "" {
+	if strings.TrimSpace(f.Destination) == "" {
 		return fmt.Errorf("destination of path %s is not valid", f.Path)
 	}
 
 	// Check schedule
-	if strings.TrimSpace(f.Schedule) != "" {
+	if strings.TrimSpace(f.Schedule) == "" {
 		return fmt.Errorf("schedule of path %s is not valid", f.Path)
 	}
 
 	// Check archiver
-	if strings.TrimSpace(f.Archiver) != "" ||
+	if strings.TrimSpace(f.Archiver) == "" ||
 		(strings.ToUpper(f.Archiver) != string(archiving.ZipProvider) &&
 			strings.ToUpper(f.Archiver) != string(archiving.TarProvider)) {
 		return fmt.Errorf("archiver of path %s is not valid", f.Path)

@@ -7,6 +7,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	// DefaultConfigPath is the default path to the config file
+	DefaultConfigPath = "harpo.yml"
+)
+
 type Notifier struct {
 	Type     string                `json:"type" yaml:"type"`
 	Settings models.ProviderConfig `json:"settings" yaml:"settings"`
@@ -47,14 +52,19 @@ func (s *Settings) Validate() error {
 		if err != nil {
 			return err
 		}
-	}
 
-	// Validate registered storages
-	for name, storage := range s.Storages {
+		// Validate used storages
+		for _, fStorage := range folder.Storages {
 
-		err := storage.Validate(name)
-		if err != nil {
-			return err
+			storage, ok := s.Storages[fStorage]
+			if !ok {
+				return err
+			}
+
+			err = storage.Validate(fStorage, folder.Destination)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

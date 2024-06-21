@@ -17,7 +17,7 @@ type Provider interface {
 
 	/*Test tests the connection to the provider.
 	 */
-	Test(ctx context.Context) error
+	Test(ctx context.Context, folder string) error
 
 	/*UploadWithReader uploads the data to the filePath.
 	`filePath` is the path where the data will be uploaded.

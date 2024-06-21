@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"path/filepath"
+	"strings"
 
 	"github.com/Polo44444/harpo/models"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -150,49 +152,49 @@ func (s *s3Provider) DeleteMany(ctx context.Context, filePaths []string) error {
 }
 
 // Test tests the connection to the provider.
-func (s *s3Provider) Test(ctx context.Context) error {
+func (s *s3Provider) Test(ctx context.Context, folder string) error {
 
-	testFilePrefix := "harpo.test"
-	testFileContent := bytes.NewBufferString("Hi dear! It's Harpo!🤗")
+	testFilePath := strings.ReplaceAll(filepath.Join(folder, "test.txt"), "\\", "/")
+	testFileContent := "Hi dear! It's Harpo!🤗"
 
 	// Upload
-	err := s.UploadWithReader(ctx, testFilePrefix, testFileContent, "text/plain")
+	err := s.UploadWithReader(ctx, testFilePath, bytes.NewBufferString("Hi dear! It's Harpo!🤗"), "text/plain")
 	if err != nil {
 		return fmt.Errorf("1. Failed to upload test file, %w", err)
 	}
 
 	// Download
-	buf := new(bytes.Buffer)
-	err = s.DownloadWithWriter(ctx, testFilePrefix, buf)
+	buf := bytes.NewBuffer(nil)
+	err = s.DownloadWithWriter(ctx, testFilePath, buf)
 	if err != nil {
 		return fmt.Errorf(`1. Upload successfull!
-		2. failed to download test file, %w`, err)
+2. failed to download test file, %w`, err)
 	}
 
 	// Check content
-	if testFileContent.String() != buf.String() {
+	if testFileContent != buf.String() {
 		return fmt.Errorf(`1. Upload successfull!
-		2. Download successfull!
-		3. Test file content is not the same`)
+2. Download successfull!
+3. Test file content is not the same`)
 	}
 
 	// Info
-	_, err = s.Info(ctx, testFilePrefix)
-	if err != nil {
+	info, err := s.Info(ctx, testFilePath)
+	if err != nil || info.Size != int64(len(testFileContent)) {
 		return fmt.Errorf(`1. Upload successfull!
-		2. Download successfull!
-		3. Test file content is the same!
-		4. Failed to get info of test file, %w`, err)
+2. Download successfull!
+3. Test file content is the same!
+4. Failed to get info of test file, %w`, err)
 	}
 
 	// Delete
-	err = s.Delete(ctx, testFilePrefix)
+	err = s.Delete(ctx, testFilePath)
 	if err != nil {
 		return fmt.Errorf(`1. Upload successfull!
-		2. Download successfull!
-		3. Test file content is the same!
-		4. Info successfull!
-		5. Failed to delete test file, %w`, err)
+2. Download successfull!
+3. Test file content is the same!
+4. Info successfull!
+5. Failed to delete test file, %w`, err)
 	}
 
 	return nil
