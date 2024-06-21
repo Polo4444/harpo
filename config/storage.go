@@ -31,6 +31,7 @@ func (s *Storage) Validate(name string, folder string) error {
 	default:
 		return fmt.Errorf("type %s of storage %s is not valid", s.Type, name)
 	}
+	defer p.Close(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("unable to get provider for storage %s: %w", name, err)

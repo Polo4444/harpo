@@ -16,8 +16,7 @@ func main() {
 	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
 
 	// read config file path  from flags
-	var configFilePath *string
-	configFilePath = flag.String("c", config.DefaultConfigPath, "path to the config file")
+	var configFilePath *string = flag.String("c", config.DefaultConfigPath, "path to the config file")
 	flag.Parse()
 
 	// Load config
