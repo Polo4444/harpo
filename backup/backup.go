@@ -12,6 +12,7 @@ import (
 type CtxString string
 
 type Engine struct {
+	ctx       context.Context
 	folders   []config.Folder
 	storages  map[string]storing.Provider
 	notifiers map[string]alerting.Provider
@@ -51,7 +52,7 @@ func (e *Engine) ProcessFolder() error {
 	// backupProcessor.setNext(NewUploader())
 
 	// Execute chain
-	ctx, cancel := context.WithTimeout(context.TODO(), ProcessTimeout)
+	ctx, cancel := context.WithTimeout(e.ctx, ProcessTimeout)
 	defer cancel()
 	chain.process(ctx, e.folders[0], e.storages, e.notifiers)
 
