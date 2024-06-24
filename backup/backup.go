@@ -35,6 +35,7 @@ func NewEngine(folders []config.Folder, storages map[string]storing.Provider, no
 		folders:   folders,
 		storages:  storages,
 		notifiers: notifiers,
+		ctx:       context.TODO(),
 	}
 }
 
