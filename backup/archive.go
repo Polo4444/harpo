@@ -64,6 +64,13 @@ func (a *archiver) process(ctx context.Context, folder config.Folder, storages m
 	}
 
 	// ─── Start Archiving Process ─────────────────────────────────────────
+	NotifyInfo(
+		ctx,
+		folder.Name,
+		fmt.Sprintf("Backup 💾 process of folder %s started🌴", folder.Name),
+		"",
+		notifiers,
+	)
 
 	// Create a file to write the archive
 	fileName := uuid.Must(uuid.NewRandom()).String() + p.Ext()
@@ -98,6 +105,13 @@ func (a *archiver) process(ctx context.Context, folder config.Folder, storages m
 	}
 
 	// ─── End Archiving Process ───────────────────────────────────────────
+	NotifyInfo(
+		ctx,
+		folder.Name,
+		fmt.Sprintf("Archival of folder %s completed🗜️✅", folder.Name),
+		"",
+		notifiers,
+	)
 
 	// Hold the file inside the context
 	newCtx := context.WithValue(ctx, ArchiveCtxKey, file)

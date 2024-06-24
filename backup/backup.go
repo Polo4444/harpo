@@ -50,7 +50,9 @@ func (e *Engine) ProcessFolder() error {
 
 	// Setup chain
 	chain := NewArchiver()
-	// backupProcessor.setNext(NewUploader())
+	chain.
+		setNext(NewUploader()).
+		setNext(nil)
 
 	// Execute chain
 	ctx, cancel := context.WithTimeout(e.ctx, ProcessTimeout)
