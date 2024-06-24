@@ -50,9 +50,9 @@ func (s *slackProvider) Send(ctx context.Context, m *Message) error {
 		return err
 	}
 
-	details := ""
-	if m.Details != nil {
-		details = m.Details.Error()
+	mErr := ""
+	if m.Err != nil {
+		mErr = m.Err.Error()
 	}
 
 	// Send the message
@@ -69,12 +69,22 @@ func (s *slackProvider) Send(ctx context.Context, m *Message) error {
 				Type: "section",
 				Fields: []BlockText{
 					{Type: "mrkdwn", Text: fmt.Sprintf("*Entity:*\n%s", m.Entity)},
-					{Type: "mrkdwn", Text: fmt.Sprintf("*Location:*\n%s", m.LocationToString())},
+					{Type: "mrkdwn", Text: fmt.Sprintf("*Location:*\n%s", m.ExtrasToString())},
 					{Type: "mrkdwn", Text: fmt.Sprintf("*Level:*\n%s", string(m.Level))},
-					{Type: "mrkdwn", Text: fmt.Sprintf("*Details:*\n%s", details)},
+					{Type: "mrkdwn", Text: fmt.Sprintf("*Details:*\n%s", m.Details)},
 				},
 			},
 		},
+	}
+
+	if mErr != "" {
+		msg.Blocks = append(msg.Blocks, Block{
+			Type: "section",
+			Text: &BlockText{
+				Type: "mrkdwn",
+				Text: fmt.Sprintf("*Error:*\n%s", mErr),
+			},
+		})
 	}
 
 	reqBodyBytes, err := json.Marshal(msg)

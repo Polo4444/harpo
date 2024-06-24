@@ -20,14 +20,22 @@ type Message struct {
 	Level   MessageLevel `json:"level"`
 	Extras  []string     `json:"location"`
 	Subject string       `json:"subject"`
-	Details error        `json:"details"`
+	Details string       `json:"details"`
+	Err     error        `json:"error"`
 }
 
-func NewMessage(entity string, level MessageLevel, extras []string, subject string, details error) *Message {
-	return &Message{Entity: entity, Level: level, Extras: extras, Subject: subject, Details: details}
+func NewMessage(entity string, level MessageLevel, extras []string, subject, details string, err error) *Message {
+	return &Message{
+		Entity:  entity,
+		Level:   level,
+		Extras:  extras,
+		Subject: subject,
+		Details: details,
+		Err:     err,
+	}
 }
 
-func (m *Message) LocationToString() string {
+func (m *Message) ExtrasToString() string {
 	return strings.Join(m.Extras, ", ")
 }
 func (m *Message) Validate() error {
@@ -37,7 +45,7 @@ func (m *Message) Validate() error {
 	}
 
 	if len(m.Extras) == 0 {
-		return fmt.Errorf("no message location provided")
+		return fmt.Errorf("no message extras provided")
 	}
 
 	return nil

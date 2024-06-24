@@ -66,23 +66,20 @@ func (s *sentryProvider) Send(_ context.Context, m *Message) error {
 	ev := sentry.NewEvent()
 	ev.Message = m.Subject
 
-	details := ""
-	if m.Details != nil {
-		details = m.Details.Error()
-	}
-
 	// create eexception with the error
 	ev.Exception = []sentry.Exception{{
 		Type:       m.Subject,
-		Value:      m.Details.Error(),
-		Stacktrace: sentry.ExtractStacktrace(m.Details),
+		Value:      m.Details,
+		Stacktrace: sentry.ExtractStacktrace(m.Err),
 	}}
 
 	ev.Level = s.ToSentryLevel(m.Level)
 	ev.User = sentry.User{ID: m.Entity}
 	ev.Extra["entity"] = m.Entity
-	ev.Extra["extras"] = m.LocationToString()
-	ev.Extra["details"] = details
+	ev.Extra["extras"] = m.ExtrasToString()
+	if m.Err != nil {
+		ev.Extra["error"] = m.Err.Error()
+	}
 	ev.Extra["level"] = m.Level
 
 	// Send the event

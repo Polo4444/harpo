@@ -61,3 +61,8 @@ func (z *zipProvider) Extract(ctx context.Context, src io.Reader, dst string, ig
 
 	return format.Extract(ctx, src, nil, NewExtract(dst).handler)
 }
+
+// Ext returns the extension of the archive.
+func (z *zipProvider) Ext() string {
+	return ".zip"
+}

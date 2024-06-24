@@ -9,17 +9,25 @@ import (
 )
 
 type Folder struct {
-	Path        string   `json:"path" yaml:"path"`
-	Remove      bool     `json:"remove" yaml:"remove"`
-	Destination string   `json:"destination" yaml:"destination"`
-	Schedule    string   `json:"schedule" yaml:"schedule"`
-	Archiver    string   `json:"archiver" yaml:"archiver"`
-	Storages    []string `json:"storages" yaml:"storages"`
-	Notifiers   []string `json:"notifiers" yaml:"notifiers"`
+	Name                string `json:"name" yaml:"name"`
+	Path                string `json:"path" yaml:"path"`
+	Remove              bool   `json:"remove" yaml:"remove"`
+	IgnoreArchiveErrors bool   `json:"ignore_archive_errors" yaml:"ignore_archive_errors"`
+	Destination         string `json:"destination" yaml:"destination"`
+	Schedule            string `json:"schedule" yaml:"schedule"`
+	Archiver            string `json:"archiver" yaml:"archiver"`
+	// TODO: Give the ability to add compression level
+	Storages  []string `json:"storages" yaml:"storages"`
+	Notifiers []string `json:"notifiers" yaml:"notifiers"`
 }
 
 // Validate checks if the folder is valid
 func (f *Folder) Validate(storages map[string]Storage, notifiers map[string]Notifier) error {
+
+	// Check name
+	if strings.TrimSpace(f.Name) == "" {
+		return fmt.Errorf("name of path %s is not valid", f.Path)
+	}
 
 	// Check path
 	fileInfo, err := os.Stat(f.Path)

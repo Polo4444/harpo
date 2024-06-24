@@ -24,6 +24,9 @@ type Provider interface {
 	// Extract extracts the archive from the src and writes it to the dst.
 	// The dst must be a directory.
 	Extract(ctx context.Context, src io.Reader, dst string, ignoreErrors bool) error
+
+	// Ext returns the extension of the archive with the dot.
+	Ext() string
 }
 
 // GetProvider returns a provider based on the entity and the config

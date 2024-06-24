@@ -70,9 +70,9 @@ func (d *discordProvider) Send(ctx context.Context, m *Message) error {
 		return err
 	}
 
-	details := ""
-	if m.Details != nil {
-		details = m.Details.Error()
+	mErr := ""
+	if m.Err != nil {
+		mErr = m.Err.Error()
 	}
 
 	// Send the message
@@ -81,7 +81,7 @@ func (d *discordProvider) Send(ctx context.Context, m *Message) error {
 		Embeds: []discordEmbed{
 			{
 				Title:       m.Entity,
-				Description: details,
+				Description: m.Details,
 				Color:       d.levelToColor(m.Level),
 				Fields: []discordEmbedFields{
 					{
@@ -91,12 +91,20 @@ func (d *discordProvider) Send(ctx context.Context, m *Message) error {
 					},
 					{
 						Name:   "Extras",
-						Value:  m.LocationToString(),
+						Value:  m.ExtrasToString(),
 						Inline: false,
 					},
 				},
 			},
 		},
+	}
+
+	if mErr != "" {
+		msg.Embeds[0].Fields = append(msg.Embeds[0].Fields, discordEmbedFields{
+			Name:   "Error",
+			Value:  mErr,
+			Inline: false,
+		})
 	}
 
 	payload, err := json.Marshal(msg)

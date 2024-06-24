@@ -14,8 +14,10 @@
 # You can add as many folders as you want.
 # Each folder will be archived and uploaded to the storages.
 folders:
-  - path: /home/user1 # (*) Path of folder to backup. Can be relative or absolute
+  - name: user1 # (*) Folder name. Used to identify the backup
+    path: /home/user1 # (*) Path of folder to backup. Can be relative or absolute
     remove: false # When true, remove the folder specified on path key after the backup
+    ignore_archive_errors: false # When true, ignore errors when archiving the folder. Errors will be add in a log file inside the final archive.
     destination: backup/user1 # (*) Destination path of the archive. Can be relative or absolute
     schedule: "0 1 * * *"  # Cron expression format. You can use this https://crontab.guru/#0_1_*_*_*
     archiver: ZIP # (*) Archiver to use. Can be ZIP or TAR
