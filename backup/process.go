@@ -10,5 +10,7 @@ import (
 
 type processor interface {
 	process(ctx context.Context, folder config.Folder, storages map[string]storing.Provider, notifiers map[string]alerting.Provider)
-	setNext()
+
+	// setNext sets the next processor in the chain and returns it
+	setNext() processor
 }

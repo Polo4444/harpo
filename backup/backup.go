@@ -1,6 +1,9 @@
 package backup
 
 import (
+	"context"
+	"time"
+
 	"github.com/Polo44444/harpo/alerting"
 	"github.com/Polo44444/harpo/config"
 	"github.com/Polo44444/harpo/storing"
@@ -21,6 +24,10 @@ const (
 	ArchiveCtxKey CtxString = "archive"
 )
 
+var (
+	ProcessTimeout = time.Hour * 2 // TODO: Calculate the timeout based on the folder size
+)
+
 // NewEngine creates a new Engine instance
 func NewEngine(folders []config.Folder, storages map[string]storing.Provider, notifiers map[string]alerting.Provider) *Engine {
 	return &Engine{
@@ -32,6 +39,21 @@ func NewEngine(folders []config.Folder, storages map[string]storing.Provider, no
 
 // Run starts the backup process
 func (e *Engine) Run() error {
+
+	return nil
+}
+
+// ProcessFolder processes the given folder. It archives and uploads the folder to the storages.
+func (e *Engine) ProcessFolder() error {
+
+	// Setup chain
+	chain := NewArchiver()
+	// backupProcessor.setNext(NewUploader())
+
+	// Execute chain
+	ctx, cancel := context.WithTimeout(context.TODO(), ProcessTimeout)
+	defer cancel()
+	chain.process(ctx, e.folders[0], e.storages, e.notifiers)
 
 	return nil
 }

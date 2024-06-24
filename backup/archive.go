@@ -24,8 +24,13 @@ type archiver struct {
 	next processor
 }
 
-func (a *archiver) setNext(p processor) {
+func NewArchiver() *archiver {
+	return &archiver{}
+}
+
+func (a *archiver) setNext(p processor) processor {
 	a.next = p
+	return p
 }
 
 func (a *archiver) process(ctx context.Context, folder config.Folder, storages map[string]storing.Provider, notifiers map[string]alerting.Provider) {
