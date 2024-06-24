@@ -13,6 +13,7 @@ type CtxString string
 
 type Engine struct {
 	ctx       context.Context
+	cancel    context.CancelFunc
 	folders   []config.Folder
 	storages  map[string]storing.Provider
 	notifiers map[string]alerting.Provider
@@ -31,11 +32,15 @@ var (
 
 // NewEngine creates a new Engine instance
 func NewEngine(folders []config.Folder, storages map[string]storing.Provider, notifiers map[string]alerting.Provider) *Engine {
+
+	ctx, cancel := context.WithCancel(context.TODO())
+
 	return &Engine{
 		folders:   folders,
 		storages:  storages,
 		notifiers: notifiers,
-		ctx:       context.TODO(),
+		ctx:       ctx,
+		cancel:    cancel,
 	}
 }
 
