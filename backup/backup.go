@@ -106,6 +106,11 @@ func (e *Engine) BuildJobs() error {
 
 // start starts the backup process in background and returns immediately.
 func (e *Engine) Start() {
+
+	if len(e.sch.Jobs()) == 0 {
+		return
+	}
+
 	e.sch.Start()
 }
 

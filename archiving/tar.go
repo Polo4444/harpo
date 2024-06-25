@@ -49,8 +49,9 @@ func newTarProvider(config models.ProviderConfig) (*tarProvider, error) {
 // Archive creates a tar archive from the src and writes it to the dst.
 func (t *tarProvider) Archive(ctx context.Context, src string, dst io.Writer, ignoreErrors bool) error {
 
+	sanitizedSrc := sanitizePath(src)
 	files, err := archiver.FilesFromDisk(nil, map[string]string{
-		src: "",
+		sanitizedSrc: "",
 	})
 	if err != nil {
 		return err

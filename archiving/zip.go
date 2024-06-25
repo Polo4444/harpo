@@ -37,8 +37,9 @@ func newZipProvider(config models.ProviderConfig) (*zipProvider, error) {
 // Archive creates a zip archive from the src and writes it to the dst.
 func (z *zipProvider) Archive(ctx context.Context, src string, dst io.Writer, ignoreErrors bool) error {
 
+	sanitizedSrc := sanitizePath(src)
 	files, err := archiver.FilesFromDisk(nil, map[string]string{
-		src: "",
+		sanitizedSrc: "",
 	})
 	if err != nil {
 		return err
