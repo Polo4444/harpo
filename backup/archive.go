@@ -41,13 +41,18 @@ func (a *archiver) process(ctx context.Context, folder config.Folder, storages m
 		err error
 	)
 
+	contentType := ""
+
 	switch archiveType {
 	case string(archiving.ZipProvider):
 		p, err = archiving.GetProvider(archiving.ZipProvider, archiving.BuildZipConfig(zip.Deflate))
+		contentType = "application/zip"
 	case string(archiving.TarProvider):
 		p, err = archiving.GetProvider(archiving.TarProvider, archiving.BuildTarConfig(9, archiving.GzCompressionType))
+		contentType = "application/x-tar"
 	default:
 		p, err = archiving.GetProvider(archiving.ZipProvider, archiving.BuildZipConfig(zip.Deflate))
+		contentType = "application/zip"
 	}
 
 	if err != nil {
@@ -115,6 +120,7 @@ func (a *archiver) process(ctx context.Context, folder config.Folder, storages m
 
 	// Hold the file inside the context
 	newCtx := context.WithValue(ctx, ArchiveCtxKey, file)
+	newCtx = context.WithValue(newCtx, ContentTypeCtxKey, contentType)
 
 	if a.next != nil {
 		a.next.process(newCtx, folder, storages, notifiers)

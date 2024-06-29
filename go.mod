@@ -37,6 +37,8 @@ require (
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/go-co-op/gocron/v2 v2.7.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/gosimple/slug v1.14.0 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect

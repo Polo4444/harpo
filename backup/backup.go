@@ -26,7 +26,8 @@ type Engine struct {
 const (
 	// Holds the archive *os.File pointer coming from archive process.
 	// Please make sure you close the file after you are done with it.
-	ArchiveCtxKey CtxString = "archive"
+	ArchiveCtxKey     CtxString = "archive"
+	ContentTypeCtxKey CtxString = "content-type"
 )
 
 const (
