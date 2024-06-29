@@ -40,7 +40,7 @@ func (u *uploader) process(ctx context.Context, folder config.Folder, storages m
 		NotifyError(
 			ctx,
 			folder.Name,
-			fmt.Sprintf("Unable to get archive file of folder %s from context", folder.Name),
+			fmt.Sprintf("Unable to get archive file of folder 📁 %s from context", folder.Name),
 			"",
 			nil,
 			notifiers,
@@ -65,7 +65,7 @@ func (u *uploader) process(ctx context.Context, folder config.Folder, storages m
 	NotifyInfo(
 		ctx,
 		folder.Name,
-		fmt.Sprintf("Started archive upload 📤 of folder %s", folder.Name),
+		fmt.Sprintf("Started archive upload 📤 of folder 📁 %s", folder.Name),
 		"",
 		notifiers,
 	)

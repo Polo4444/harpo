@@ -113,7 +113,7 @@ func (a *archiver) process(ctx context.Context, folder config.Folder, storages m
 	NotifyInfo(
 		ctx,
 		folder.Name,
-		fmt.Sprintf("Archival of folder %s completed🗜️✅", folder.Name),
+		fmt.Sprintf("Archival of folder 📁 %s completed🗜️✅", folder.Name),
 		"",
 		notifiers,
 	)

@@ -144,6 +144,7 @@ func (e *Engine) ProcessFolder(folder config.Folder, storages map[string]storing
 	chain := NewArchiver()
 	chain.
 		setNext(NewUploader()).
+		setNext(NewCleaner()).
 		setNext(nil)
 
 	// Execute chain
