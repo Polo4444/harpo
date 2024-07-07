@@ -1,7 +1,6 @@
 package backup
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"log"
@@ -32,9 +31,73 @@ func (u *uploader) setNext(p processor) processor {
 	return p
 }
 
+func (u *uploader) upload(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	archiveFile string,
+	contentType string,
+	folder *config.Folder,
+	notifiers map[string]alerting.Provider,
+	storName string,
+	stor storing.Provider) {
+
+	defer wg.Done()
+
+	// open file
+	file, err := os.Open(archiveFile)
+	if err != nil {
+		log.Printf("Unable to open archive file %s: %v\n", archiveFile, err)
+		NotifyError(
+			ctx,
+			folder.Name,
+			fmt.Sprintf("Unable to open archive file %s", archiveFile),
+			"",
+			err,
+			notifiers,
+		)
+		return
+	}
+	defer func() {
+		file.Close()
+	}()
+
+	// Create timeout context
+	uCtx, cancel := context.WithTimeout(ctx, uploadTimeout) // TODO: Calculate the timeout based on the folder size
+	defer cancel()
+
+	// Upload the archive file
+	destFilePath := getDestFilePath(
+		folder.Name,
+		folder.Destination,
+		filepath.Ext(file.Name()),
+	)
+
+	err = stor.UploadWithReader(uCtx, destFilePath, file, contentType)
+	if err != nil {
+		log.Printf("Unable to upload archive to storage %s: %v\n", storName, err)
+		NotifyError(
+			ctx,
+			folder.Name,
+			fmt.Sprintf("Unable to upload archive to storage %s", storName),
+			"",
+			err,
+			notifiers,
+		)
+		return
+	}
+
+	NotifyInfo(
+		ctx,
+		folder.Name,
+		fmt.Sprintf("Archive uploaded 📤 ✅ to storage %s", storName),
+		"",
+		notifiers,
+	)
+}
+
 func (u *uploader) process(ctx context.Context, folder config.Folder, storages map[string]storing.Provider, notifiers map[string]alerting.Provider) {
 
-	archiveFile, ok := ctx.Value(ArchiveCtxKey).(*os.File)
+	archiveFile, ok := ctx.Value(ArchiveCtxKey).(string)
 	if !ok {
 		log.Printf("Unable to get archive file from context\n")
 		NotifyError(
@@ -47,13 +110,6 @@ func (u *uploader) process(ctx context.Context, folder config.Folder, storages m
 		)
 		return
 	}
-	defer func() {
-
-		// remove the archive file
-		fileName := archiveFile.Name()
-		archiveFile.Close()
-		os.Remove(fileName)
-	}()
 
 	// We get content type
 	contentType, ok := ctx.Value(ContentTypeCtxKey).(string)
@@ -78,46 +134,12 @@ func (u *uploader) process(ctx context.Context, folder config.Folder, storages m
 	for name, storage := range storages {
 
 		wg.Add(1)
-		go func(storName string, stor storing.Provider) {
+		go u.upload(ctx, &wg, archiveFile, contentType, &folder, notifiers, name, storage)
+	}
 
-			defer wg.Done()
+	wg.Wait()
 
-			// Create a new reader for the archive file
-			r := bufio.NewReader(archiveFile)
-
-			// Create timeout context
-			uCtx, cancel := context.WithTimeout(ctx, uploadTimeout) // TODO: Calculate the timeout based on the folder size
-			defer cancel()
-
-			// Upload the archive file
-			destFilePath := getDestFilePath(
-				folder.Name,
-				folder.Destination,
-				filepath.Ext(archiveFile.Name()),
-			)
-			err := stor.UploadWithReader(uCtx, destFilePath, r, contentType)
-			if err != nil {
-				log.Printf("Unable to upload archive to storage %s: %v\n", storName, err)
-				NotifyError(
-					ctx,
-					folder.Name,
-					fmt.Sprintf("Unable to upload archive to storage %s", storName),
-					"",
-					err,
-					notifiers,
-				)
-				return
-			}
-
-			NotifyInfo(
-				ctx,
-				folder.Name,
-				fmt.Sprintf("Archive uploaded 📤✅ to storage %s", storName),
-				"",
-				notifiers,
-			)
-		}(name, storage)
-
-		wg.Wait()
+	if u.next != nil {
+		u.next.process(ctx, folder, storages, notifiers)
 	}
 }

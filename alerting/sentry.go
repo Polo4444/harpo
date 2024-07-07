@@ -43,6 +43,8 @@ func (s *sentryProvider) ToSentryLevel(level MessageLevel) sentry.Level {
 		return sentry.LevelDebug
 	case InfoMessage:
 		return sentry.LevelInfo
+	case SuccessMessage:
+		return sentry.LevelInfo
 	case WarningMessage:
 		return sentry.LevelWarning
 	case ErrorMessage:

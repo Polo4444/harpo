@@ -49,8 +49,10 @@ func (d *discordProvider) levelToColor(level MessageLevel) int {
 	switch level {
 	case DebugMessage:
 		return 0xeb459e
-	case InfoMessage:
+	case InfoMessage: // Blue
 		return 0x3498db
+	case SuccessMessage: // Green
+		return 0x2ecc71
 	case WarningMessage:
 		return 0xf1c40f
 	case ErrorMessage:

@@ -28,6 +28,19 @@ func NotifyInfo(ctx context.Context, folderName, text, details string, notifiers
 	notify(ctx, m, notifiers)
 }
 
+func NotifySuccess(ctx context.Context, folderName, text, details string, notifiers map[string]alerting.Provider) {
+
+	m := &alerting.Message{
+		Entity:  "Harpo Backup",
+		Subject: text,
+		Level:   alerting.SuccessMessage,
+		Extras:  []string{folderName},
+		Details: details,
+	}
+
+	notify(ctx, m, notifiers)
+}
+
 // NotifyError sends an error message to all notifiers
 func NotifyError(ctx context.Context, folderName, text, details string, err error, notifiers map[string]alerting.Provider) {
 

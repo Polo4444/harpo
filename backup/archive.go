@@ -92,6 +92,12 @@ func (a *archiver) process(ctx context.Context, folder config.Folder, storages m
 		)
 		return
 	}
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.Printf("Unable to close file %s: %v\n", fileName, err)
+		}
+	}()
 
 	pCtx, cancel := context.WithTimeout(ctx, archiveTimeout) // TODO: Calculate the timeout based on the folder size
 	defer cancel()
@@ -113,16 +119,17 @@ func (a *archiver) process(ctx context.Context, folder config.Folder, storages m
 	NotifyInfo(
 		ctx,
 		folder.Name,
-		fmt.Sprintf("Archival of folder 📁 %s completed🗜️✅", folder.Name),
+		fmt.Sprintf("Archival of folder 📁 %s completed 🗜️ ✅", folder.Name),
 		"",
 		notifiers,
 	)
 
 	// Hold the file inside the context
-	newCtx := context.WithValue(ctx, ArchiveCtxKey, file)
+	newCtx := context.WithValue(ctx, ArchiveCtxKey, fileName)
 	newCtx = context.WithValue(newCtx, ContentTypeCtxKey, contentType)
 
 	if a.next != nil {
+		file.Close()
 		a.next.process(newCtx, folder, storages, notifiers)
 	}
 }

@@ -27,6 +27,20 @@ func (c *cleaner) setNext(p processor) processor {
 
 func (c *cleaner) process(ctx context.Context, folder config.Folder, storages map[string]storing.Provider, notifiers map[string]alerting.Provider) {
 
+	defer func() {
+
+		// We remove archive file
+		archiveFile, ok := ctx.Value(ArchiveCtxKey).(string)
+		if !ok {
+			log.Printf("Unable to get archive file from context\n")
+		}
+
+		err := os.Remove(archiveFile)
+		if err != nil {
+			log.Printf("Unable to remove archive file %s: %v\n", archiveFile, err)
+		}
+	}()
+
 	if !folder.Remove {
 		c.success(ctx, folder, notifiers)
 		return
@@ -57,15 +71,16 @@ func (c *cleaner) process(ctx context.Context, folder config.Folder, storages ma
 	}
 
 	log.Printf("Folder 📁 %s has been removed\n", folderPath)
+
 	c.success(ctx, folder, notifiers)
 }
 
 func (c *cleaner) success(ctx context.Context, folder config.Folder, notifiers map[string]alerting.Provider) {
 
-	NotifyInfo(
+	NotifySuccess(
 		ctx,
 		folder.Name,
-		fmt.Sprintf("Folder 📁 %s has been successfully backup 💾✅🚀🎉", folder.Name),
+		fmt.Sprintf("Folder 📁 %s has been successfully backed up 💾 ✅ 🚀 🎉", folder.Name),
 		"",
 		notifiers,
 	)

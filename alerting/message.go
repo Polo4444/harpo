@@ -10,6 +10,7 @@ type MessageLevel string
 const (
 	DebugMessage   MessageLevel = "debug"
 	InfoMessage    MessageLevel = "info"
+	SuccessMessage MessageLevel = "success"
 	WarningMessage MessageLevel = "warning"
 	ErrorMessage   MessageLevel = "error"
 	FatalMessage   MessageLevel = "fatal"
