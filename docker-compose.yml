@@ -4,5 +4,3 @@ services:
     restart: always
     container_name: harpo
     build: .
-    ports:
-      - '8080:8080'
